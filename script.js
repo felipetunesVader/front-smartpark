@@ -1,9 +1,35 @@
 // Configuração da API
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
+// Chave base para armazenar o log no localStorage
+const LOG_STORAGE_KEY = 'operations_log';
+const LOG_TIMESTAMP_KEY = 'operations_log_timestamp';
+
 // Função para obter o token do localStorage
 function getToken() {
     return localStorage.getItem('smartpark_token');
+}
+
+// Função para obter o ID do usuário do token
+function getUserId() {
+    const token = getToken();
+    if (!token) return null;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.sub; // ou payload.user_id, dependendo de como está estruturado seu token
+    } catch (error) {
+        console.error('Erro ao obter ID do usuário:', error);
+        return null;
+    }
+}
+
+// Função para obter as chaves de armazenamento específicas do usuário
+function getUserStorageKeys() {
+    const userId = getUserId();
+    return {
+        log: `${LOG_STORAGE_KEY}_${userId}`,
+        timestamp: `${LOG_TIMESTAMP_KEY}_${userId}`
+    };
 }
 
 // Função para verificar se o usuário está autenticado
@@ -49,6 +75,86 @@ function isAdmin() {
         console.error('Erro ao verificar permissões:', error);
         return false;
     }
+}
+
+// Função para carregar o log de operações
+function loadOperationsLog() {
+    const logElement = document.getElementById('operationsLog');
+    if (!logElement) return;
+
+    const userId = getUserId();
+    if (!userId) {
+        logElement.innerHTML = '<p class="text-gray-500 text-center italic">Erro ao carregar operações</p>';
+        return;
+    }
+
+    const { log: logKey, timestamp: timestampKey } = getUserStorageKeys();
+
+    // Verifica se precisa resetar o log (24h)
+    const lastTimestamp = localStorage.getItem(timestampKey);
+    const now = new Date().getTime();
+    if (lastTimestamp && (now - parseInt(lastTimestamp)) > 24 * 60 * 60 * 1000) {
+        localStorage.removeItem(logKey);
+        localStorage.removeItem(timestampKey);
+    }
+
+    // Carrega o log do localStorage
+    const log = JSON.parse(localStorage.getItem(logKey) || '[]');
+    
+    if (log.length === 0) {
+        logElement.innerHTML = '<p class="text-gray-500 text-center italic">Nenhuma operação registrada nas últimas 24 horas</p>';
+        return;
+    }
+
+    // Renderiza os logs
+    logElement.innerHTML = log.map(entry => `
+        <div class="p-3 ${entry.tipo === 'entrada' ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
+            <div class="flex justify-between items-center">
+                <span class="font-semibold ${entry.tipo === 'entrada' ? 'text-green-700' : 'text-red-700'}">
+                    ${entry.tipo === 'entrada' ? '🚗 Entrada' : '🚙 Saída'}
+                </span>
+                <span class="text-sm text-gray-500">${entry.horario}</span>
+            </div>
+            <p class="text-gray-700">Placa: ${entry.placa}</p>
+            ${entry.tipo === 'saida' ? `
+                <p class="text-gray-700">Tempo: ${entry.tempo || 'N/A'}</p>
+                <p class="text-gray-700">Valor: ${entry.valor || 'N/A'}</p>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+// Função para adicionar uma nova entrada no log
+function addToOperationsLog(data, tipo) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    const { log: logKey, timestamp: timestampKey } = getUserStorageKeys();
+    const now = new Date();
+    const entry = {
+        tipo: tipo,
+        placa: data.placa,
+        horario: now.toLocaleTimeString(),
+        timestamp: now.getTime()
+    };
+
+    if (tipo === 'saida') {
+        entry.tempo = data.tempo_estacionado;
+        entry.valor = formatCurrency(data.valor_devido);
+    }
+
+    // Carrega o log existente
+    const log = JSON.parse(localStorage.getItem(logKey) || '[]');
+    
+    // Adiciona a nova entrada no início do array
+    log.unshift(entry);
+
+    // Salva o log atualizado
+    localStorage.setItem(logKey, JSON.stringify(log));
+    localStorage.setItem(timestampKey, now.getTime().toString());
+
+    // Atualiza a exibição
+    loadOperationsLog();
 }
 
 // Classe para gerenciar a captura de imagens
@@ -185,11 +291,14 @@ class ImageCapture {
             });
 
             const data = await response.json();
-            console.log('Dados recebidos da API:', data); // Log dos dados recebidos
+            console.log('Dados recebidos da API:', data);
 
             if (!response.ok) {
                 throw new Error(data.detail || 'Erro ao processar requisição');
             }
+
+            // Adiciona a operação ao log
+            addToOperationsLog(data, this.tipo.toLowerCase());
 
             // Mostrar resultado com a placa correta do objeto data
             if (this.tipo === 'Entrada') {
@@ -199,7 +308,7 @@ class ImageCapture {
                 `);
             } else {
                 showModal('Saída Registrada', `
-                    <p class="mb-2">Placa identificada: <strong>${data.placa || 'Não identificada'}</strong></p>
+                    <p class="mb-2">Placa identificada: <strong>${data.placa}</strong></p>
                     <p class="mb-2">Tempo estacionado: <strong>${data.tempo_estacionado || '0min'}</strong></p>
                     <p>Valor a pagar: <strong>${formatCurrency(data.valor_devido || 0)}</strong></p>
                 `);
@@ -306,4 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Atualiza o dashboard a cada 30 segundos
     setInterval(updateDashboard, 30000);
+
+    // Carrega o log de operações
+    loadOperationsLog();
 }); 
