@@ -77,6 +77,55 @@ function isAdmin() {
     }
 }
 
+// Função para registrar saída rápida
+async function registrarSaidaRapida(placa) {
+    const token = checkAuth();
+    if (!token) return;
+
+    try {
+        console.log('Tentando registrar saída para a placa:', placa);
+
+        const formData = new FormData();
+        formData.append('placa', placa);
+
+        const response = await fetch(`${API_BASE_URL}/estacionamento/saida-distant`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        console.log('Status da resposta:', response.status);
+        console.log('Status text:', response.statusText);
+
+        const data = await response.json();
+        console.log('Dados da resposta:', data);
+        
+        if (!response.ok) {
+            throw new Error(data.detail || 'Erro ao processar saída');
+        }
+
+        // Adiciona a operação ao log
+        addToOperationsLog(data, 'saida');
+
+        // Mostra o modal com o resultado
+        showModal('Saída Registrada', `
+            <p class="mb-2">Placa identificada: <strong>${data.placa}</strong></p>
+            <p class="mb-2">Tempo estacionado: <strong>${data.tempo_estacionado || '0min'}</strong></p>
+            <p>Valor a pagar: <strong>${formatCurrency(data.valor_devido || 0)}</strong></p>
+        `);
+
+    } catch (error) {
+        console.error('Erro detalhado ao registrar saída:', {
+            message: error.message,
+            error: error,
+            placa: placa
+        });
+        showModal('Erro', `Erro ao registrar saída do veículo com placa ${placa}. ${error.message}`);
+    }
+}
+
 // Função para carregar o log de operações
 function loadOperationsLog() {
     const logElement = document.getElementById('operationsLog');
@@ -106,12 +155,22 @@ function loadOperationsLog() {
         return;
     }
 
+    // Ícones SVG personalizados
+    const entryIcon = `<svg class="w-5 h-5 inline-block" fill="#123524" viewBox="0 0 24 24">
+        <path d="M11 16l-7-7 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 9zm0 4l-7-7 1.41-1.41L11 17.17l7.59-7.59L20 11l-9 9z"/>
+    </svg>`;
+
+    const exitIcon = `<svg class="w-5 h-5 inline-block" fill="#123524" viewBox="0 0 24 24">
+        <path d="M13 5l7 7-7 7v-4H4v-6h9V5zm-2 4H6v2h5v3l4-4-4-4v3z"/>
+    </svg>`;
+
     // Renderiza os logs
     logElement.innerHTML = log.map(entry => `
         <div class="p-3 ${entry.tipo === 'entrada' ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
             <div class="flex justify-between items-center">
-                <span class="font-semibold ${entry.tipo === 'entrada' ? 'text-green-700' : 'text-red-700'}">
-                    ${entry.tipo === 'entrada' ? '🚗 Entrada' : '🚙 Saída'}
+                <span class="font-semibold ${entry.tipo === 'entrada' ? 'text-phthalo' : 'text-red-700'} flex items-center gap-2">
+                    ${entry.tipo === 'entrada' ? entryIcon : exitIcon}
+                    ${entry.tipo === 'entrada' ? 'Entrada' : 'Saída'}
                 </span>
                 <span class="text-sm text-gray-500">${entry.horario}</span>
             </div>
@@ -119,7 +178,13 @@ function loadOperationsLog() {
             ${entry.tipo === 'saida' ? `
                 <p class="text-gray-700">Tempo: ${entry.tempo || 'N/A'}</p>
                 <p class="text-gray-700">Valor: ${entry.valor || 'N/A'}</p>
-            ` : ''}
+            ` : `
+                <button onclick="registrarSaidaRapida('${entry.placa}')" 
+                    class="mt-2 bg-phthalo hover:bg-phthalo-light text-white text-sm py-1 px-3 rounded-md flex items-center gap-1">
+                    ${exitIcon}
+                    Registrar Saída
+                </button>
+            `}
         </div>
     `).join('');
 }
