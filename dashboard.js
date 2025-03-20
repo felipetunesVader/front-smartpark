@@ -74,6 +74,7 @@ async function fetchDashboardData() {
         document.getElementById('faturamento').textContent = formatCurrency(faturamentoData.faturamento_total || 0);
         document.getElementById('totalVeiculos').textContent = faturamentoData.quantidade_veiculos || 0;
         document.getElementById('tempoMedio').textContent = formatTime(Math.round((faturamentoData.ticket_medio || 0) * 60));
+        document.getElementById('ticketMedio').textContent = formatCurrency(faturamentoData.ticket_medio || 0);
 
         // Buscar dados de fluxo por período
         const fluxoUrl = `${API_BASE_URL}/admin/fluxo/periodo?data_inicial=${formatDate(dataInicial)}&data_final=${formatDate(dataFinal)}`;
@@ -197,8 +198,8 @@ function updateVeiculosRecorrentes(data) {
     tbody.innerHTML = data.map(veiculo => `
         <tr>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${veiculo.placa}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${veiculo.visitas}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(veiculo.ultima_visita).toLocaleDateString()}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${veiculo.quantidade_visitas}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(veiculo.valor_total)}</td>
         </tr>
     `).join('');
 }
