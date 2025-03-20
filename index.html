@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPark - Sistema Inteligente de Estacionamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        phthalo: '#123524', // Phthalo Green
+                        'phthalo-light': '#1e5438',
+                        'phthalo-dark': '#0a1f15',
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-phthalo shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <span class="text-white text-2xl font-bold">SmartPark</span>
+                    <button id="dashboardBtn" class="hidden bg-phthalo-light hover:bg-phthalo-dark text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </button>
+                </div>
+                <div class="flex items-center">
+                    <button id="logoutBtn" class="bg-phthalo-light hover:bg-phthalo-dark text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Seção de Registro de Entrada/Saída -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Registro de Entrada -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-phthalo mb-6">Registrar Entrada</h2>
+                <div class="space-y-4">
+                    <!-- Preview da Imagem -->
+                    <div class="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
+                        <video id="videoEntrada" class="hidden w-full h-full object-cover" autoplay playsinline></video>
+                        <img id="previewEntrada" class="hidden w-full h-full object-cover" alt="Preview da imagem">
+                        <div id="placeholderEntrada" class="absolute inset-0 flex items-center justify-center text-gray-400">
+                            <span>Nenhuma imagem selecionada</span>
+                        </div>
+                    </div>
+                    <!-- Botões de Ação -->
+                    <div class="flex gap-2">
+                        <input type="file" id="fileEntrada" accept="image/*" class="hidden">
+                        <button onclick="document.getElementById('fileEntrada').click()" class="flex-1 bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                            Upload
+                        </button>
+                        <button id="cameraEntrada" class="flex-1 bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                            Câmera
+                        </button>
+                        <button id="capturarEntrada" class="hidden flex-1 bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                            Capturar
+                        </button>
+                    </div>
+                    <button id="enviarEntrada" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium">
+                        Registrar Entrada
+                    </button>
+                </div>
+            </div>
+
+            <!-- Registro de Saída -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-phthalo mb-6">Registrar Saída</h2>
+                <div class="space-y-4">
+                    <!-- Preview da Imagem -->
+                    <div class="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
+                        <video id="videoSaida" class="hidden w-full h-full object-cover" autoplay playsinline></video>
+                        <img id="previewSaida" class="hidden w-full h-full object-cover" alt="Preview da imagem">
+                        <div id="placeholderSaida" class="absolute inset-0 flex items-center justify-center text-gray-400">
+                            <span>Nenhuma imagem selecionada</span>
+                        </div>
+                    </div>
+                    <!-- Botões de Ação -->
+                    <div class="flex gap-2">
+                        <input type="file" id="fileSaida" accept="image/*" class="hidden">
+                        <button onclick="document.getElementById('fileSaida').click()" class="flex-1 bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                            Upload
+                        </button>
+                        <button id="cameraSaida" class="flex-1 bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                            Câmera
+                        </button>
+                        <button id="capturarSaida" class="hidden flex-1 bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                            Capturar
+                        </button>
+                    </div>
+                    <button id="enviarSaida" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-md font-medium">
+                        Registrar Saída
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Resultado -->
+        <div id="resultModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 id="modalTitle" class="text-xl font-bold text-phthalo mb-4"></h3>
+                <div id="modalContent" class="text-gray-600 mb-6"></div>
+                <button onclick="document.getElementById('resultModal').classList.add('hidden')" 
+                    class="w-full bg-phthalo hover:bg-phthalo-light text-white py-2 px-4 rounded-md">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html> 
