@@ -40,38 +40,80 @@
     </nav>
 
     <main class="container mx-auto px-4 py-8">
+        <!-- Seletor de Período -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold text-phthalo mb-4">Selecione o Período</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Data Inicial</label>
+                    <input type="date" id="dataInicial" class="w-full p-2 border border-gray-300 rounded-md focus:ring-phthalo focus:border-phthalo">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Data Final</label>
+                    <input type="date" id="dataFinal" class="w-full p-2 border border-gray-300 rounded-md focus:ring-phthalo focus:border-phthalo">
+                </div>
+            </div>
+            <button id="buscarDados" class="mt-4 bg-phthalo hover:bg-phthalo-light text-white px-6 py-2 rounded-md text-sm font-medium">
+                Buscar Dados
+            </button>
+        </div>
+
+        <!-- Cards de Informações -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Card de Ocupação -->
+            <!-- Card de Faturamento -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold text-phthalo mb-4">Ocupação Atual</h2>
+                <h2 class="text-xl font-semibold text-phthalo mb-4">Faturamento Total</h2>
                 <div class="text-4xl font-bold text-center text-phthalo">
-                    <span id="occupancy">0</span>%
+                    <span id="faturamento">R$ 0,00</span>
                 </div>
             </div>
 
-            <!-- Card de Vagas Disponíveis -->
+            <!-- Card de Total de Veículos -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold text-phthalo mb-4">Vagas Disponíveis</h2>
+                <h2 class="text-xl font-semibold text-phthalo mb-4">Total de Veículos</h2>
                 <div class="text-4xl font-bold text-center text-phthalo">
-                    <span id="available-spots">0</span>
+                    <span id="totalVeiculos">0</span>
                 </div>
             </div>
 
-            <!-- Card de Veículos Hoje -->
+            <!-- Card de Tempo Médio -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold text-phthalo mb-4">Veículos Hoje</h2>
+                <h2 class="text-xl font-semibold text-phthalo mb-4">Tempo Médio</h2>
                 <div class="text-4xl font-bold text-center text-phthalo">
-                    <span id="vehicles-today">0</span>
+                    <span id="tempoMedio">0min</span>
                 </div>
             </div>
         </div>
 
-        <!-- Espaço para mais conteúdo do dashboard -->
-        <div class="mt-8">
-            <p class="text-center text-gray-600">Mais informações serão adicionadas em breve...</p>
+        <!-- Tabela de Veículos Recorrentes -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-phthalo mb-4">Veículos Recorrentes</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visitas</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Última Visita</th>
+                        </tr>
+                    </thead>
+                    <tbody id="veiculosRecorrentesBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Dados serão inseridos aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Gráfico de Fluxo -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-phthalo mb-4">Fluxo por Período</h2>
+            <div class="h-64">
+                <canvas id="fluxoGrafico"></canvas>
+            </div>
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html> 
