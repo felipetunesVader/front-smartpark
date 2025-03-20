@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SmartPark</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        phthalo: '#123524',
+                        'phthalo-light': '#1e5438',
+                        'phthalo-dark': '#0a1f15',
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-phthalo shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <span class="text-white text-2xl font-bold">SmartPark</span>
+                    <button onclick="window.location.href='/index.html'" class="bg-phthalo-light hover:bg-phthalo-dark text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Voltar
+                    </button>
+                </div>
+                <div class="flex items-center">
+                    <button id="logoutBtn" class="bg-phthalo-light hover:bg-phthalo-dark text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card de Ocupação -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-phthalo mb-4">Ocupação Atual</h2>
+                <div class="text-4xl font-bold text-center text-phthalo">
+                    <span id="occupancy">0</span>%
+                </div>
+            </div>
+
+            <!-- Card de Vagas Disponíveis -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-phthalo mb-4">Vagas Disponíveis</h2>
+                <div class="text-4xl font-bold text-center text-phthalo">
+                    <span id="available-spots">0</span>
+                </div>
+            </div>
+
+            <!-- Card de Veículos Hoje -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-phthalo mb-4">Veículos Hoje</h2>
+                <div class="text-4xl font-bold text-center text-phthalo">
+                    <span id="vehicles-today">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Espaço para mais conteúdo do dashboard -->
+        <div class="mt-8">
+            <p class="text-center text-gray-600">Mais informações serão adicionadas em breve...</p>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html> 
