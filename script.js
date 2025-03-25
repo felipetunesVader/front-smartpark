@@ -261,7 +261,14 @@ class ImageCapture {
             this.stopCamera();
         } else {
             try {
-                this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                // Configuração para preferir câmera traseira em dispositivos móveis
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: "environment" }
+                    }
+                };
+                
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints);
                 this.video.srcObject = this.stream;
                 this.video.classList.remove('hidden');
                 this.preview.classList.add('hidden');
