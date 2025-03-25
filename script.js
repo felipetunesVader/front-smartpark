@@ -1,5 +1,5 @@
 // Configuração da API
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://smartpark-d07n.onrender.com';
 
 // Chave base para armazenar o log no localStorage
 const LOG_STORAGE_KEY = 'operations_log';

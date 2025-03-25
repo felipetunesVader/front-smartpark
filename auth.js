@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://smartpark-d07n.onrender.com';
 
 // Função para mostrar mensagens de erro ou sucesso
 function showMessage(message, isError = false) {
